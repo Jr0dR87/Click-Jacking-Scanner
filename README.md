@@ -26,5 +26,6 @@ Install dependencies:
 ```
 pip install requests colorama
 ```
+
 ## Usage
 python3 scanner.py https://example.com
