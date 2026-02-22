@@ -27,35 +27,52 @@ def check_clickjacking(target_url):
         print(Fore.CYAN + "="*50 + Style.RESET_ALL)
 
         if xfo_header:
-            print(f"X-Frame-Options Header: {xfo_header}")
             if xfo_protected:
-                print(Fore.GREEN + "X-Frame-Options properly protects against clickjacking." + Style.RESET_ALL)
+                print(Fore.GREEN + 
+                      "X-Frame-Options properly protects against clickjacking." + 
+                      Style.RESET_ALL)
             else:
-                print(Fore.RED + "X-Frame-Options is present but misconfigured. Modern browsers may not be protected." + Style.RESET_ALL)
+                print(Fore.RED + 
+                      "X-Frame-Options is present but weak. "
+                      "Unsupported values are ignored by browsers, effectively disabling protection." + 
+                      Style.RESET_ALL)
         else:
-            print(Fore.RED + "X-Frame-Options Header: MISSING. This allows framing from any site." + Style.RESET_ALL)
+            print(Fore.RED + 
+                  "X-Frame-Options Header: MISSING. "
+                  "This allows attackers to embed the page inside a malicious iframe." + 
+                  Style.RESET_ALL)
 
         if csp_header:
-            print(f"\nContent-Security-Policy Header: {csp_header}")
             if frame_ancestors_value:
                 print(f"frame-ancestors Directive: {frame_ancestors_value}")
                 if csp_protected:
-                    print(Fore.GREEN + "CSP frame-ancestors properly restricts framing." + Style.RESET_ALL)
+                    print(Fore.GREEN + 
+                          "CSP frame-ancestors properly restricts framing." + 
+                          Style.RESET_ALL)
                 else:
-                    print(Fore.RED + "CSP frame-ancestors is permissive (e.g., allows *). This does not prevent framing." + Style.RESET_ALL)
+                    print(Fore.RED + 
+                          "CSP frame-ancestors is permissive. "
+                          "A wildcard (*) permits framing by any origin." + 
+                          Style.RESET_ALL)
             else:
-                print(Fore.RED + "frame-ancestors Directive: MISSING. This allows the page to be framed by any site." + Style.RESET_ALL)
+                print(Fore.RED + 
+                      "frame-ancestors Directive: MISSING. "
+                      "CSP does not restrict which sites may frame this page." + 
+                      Style.RESET_ALL)
         else:
-            print(Fore.RED + "Content-Security-Policy Header: MISSING. No frame-ancestors directive present." + Style.RESET_ALL)
+            print(Fore.RED + 
+                  "Content-Security-Policy Header: MISSING. "
+                  "No framing restrictions are enforced via CSP." + 
+                  Style.RESET_ALL)
 
         if xfo_protected and csp_protected:
-            print(Fore.GREEN + "\nResult: PROTECTED — X-Frame-Options and CSP frame-ancestors are sufficient." + Style.RESET_ALL)
+            print(Fore.GREEN + "\nResult: PROTECTED FROM CLICKJACKING: X-Frame-Options and CSP frame-ancestors are sufficient." + Style.RESET_ALL)
         elif xfo_protected:
-            print(Fore.GREEN + "\nResult: PROTECTED — X-Frame-Options is sufficient." + Style.RESET_ALL)
+            print(Fore.GREEN + "\nResult: PROTECTED FROM CLICKJACKING: X-Frame-Options is sufficient." + Style.RESET_ALL)
         elif csp_protected:
-            print(Fore.GREEN + "\nResult: PROTECTED — CSP frame-ancestors is sufficient." + Style.RESET_ALL)
+            print(Fore.GREEN + "\nResult: PROTECTED FROM CLICKJACKING: CSP frame-ancestors is sufficient." + Style.RESET_ALL)
         else:
-            print(Fore.RED + "\nResult: VULNERABLE — missing or misconfigured X-Frame-Options and CSP frame-ancestors." + Style.RESET_ALL)
+            print(Fore.RED + "\nResult: VULNERABLE TO CLICKJACKING: missing or misconfigured X-Frame-Options and CSP frame-ancestors." + Style.RESET_ALL)
 
     except Exception as e:
         print(Fore.RED + f"Error: Could not reach site {target_url}" + Style.RESET_ALL)
